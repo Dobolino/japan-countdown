@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Japan Countdown - 16. November 2025</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  :root {
+    --base-scale: 1;
+  }
+
+  body {
+    background: linear-gradient(to bottom, #0d0d0d, #1a1a1a);
+    color: #ff4f9d;
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+    padding: 20px;
+    margin: 0;
+    min-height: 100vh;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Sakura_branch.png/320px-Sakura_branch.png');
+    background-repeat: no-repeat;
+    background-size: 150px;
+    background-position: top right;
+    overflow-x: hidden;
+  }
+
+  h1 {
+    color: #fff;
+    font-weight: 300;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px #ff4f9d, 0 0 20px #ff4f9d;
+    font-size: calc(1.5rem * var(--base-scale));
+  }
+
+  #countdown {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0 auto;
+    max-width: 95%;
+    transform-origin: center;
+  }
+
+  .time-box {
+    background: rgba(30, 30, 30, 0.85);
+    padding: calc(10px * var(--base-scale));
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(255, 79, 157, 0.5), inset 0 0 5px #ff4f9d;
+    min-width: calc(70px * var(--base-scale));
+    border: 2px solid #ff4f9d;
+    flex-grow: 1;
+  }
+
+  .number {
+    font-size: calc(2rem * var(--base-scale));
+    font-weight: bold;
+    text-shadow: 0 0 15px #ff4f9d, 0 0 25px #ff4f9d;
+    line-height: 1.2;
+  }
+
+  .label {
+    font-size: calc(0.7rem * var(--base-scale));
+    color: #ffcce0;
+    margin-top: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .japanese-text {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: calc(1rem * var(--base-scale));
+    color: #ffb7c5;
+    margin-top: 20px;
+  }
+
+  .completed-message {
+    font-size: calc(1.5rem * var(--base-scale));
+    color: #ff4f9d;
+    text-shadow: 0 0 15px #ff4f9d;
+    margin-top: 30px;
+  }
+
+  @media (max-width: 600px) {
+    :root {
+      --base-scale: 0.8;
+    }
+    
+    body {
+      background-size: 100px;
+      padding-top: 30px;
+    }
+    
+    #countdown {
+      gap: 5px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    :root {
+      --base-scale: 0.7;
+    }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@500&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<h1>🇯🇵 カウントダウン - Japan Reise</h1>
+<div id="countdown">
+  <div class="time-box"><div class="number" id="months">0</div><div class="label">Monate</div></div>
+  <div class="time-box"><div class="number" id="days">0</div><div class="label">Tage</div></div>
+  <div class="time-box"><div class="number" id="hours">0</div><div class="label">Stunden</div></div>
+  <div class="time-box"><div class="number" id="minutes">0</div><div class="label">Minuten</div></div>
+  <div class="time-box"><div class="number" id="seconds">0</div><div class="label">Sekunden</div></div>
+</div>
+
+<div class="japanese-text">桜の季節を待ちながら</div>
+
+<script>
+  // Skalierung basierend auf Bildschirmgröße
+  function adjustScale() {
+    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    let scale = 1;
+    
+    if (viewportWidth < 600) scale = 0.8;
+    if (viewportWidth < 400) scale = 0.7;
+    if (viewportWidth < 300) scale = 0.6;
+    
+    document.documentElement.style.setProperty('--base-scale', scale);
+  }
+
+  // Countdown-Logik
+  const zielDatum = new Date("2025-11-16T11:55:00").getTime();
+
+  function berechneCountdown() {
+    const jetzt = new Date();
+    let rest = zielDatum - jetzt.getTime();
+
+    if (rest <= 0) {
+      document.getElementById("countdown").innerHTML = '<div class="completed-message">出発の日です！<br>The day has come!</div>';
+      document.querySelector(".japanese-text").textContent = "日本へようこそ！";
+      clearInterval(timer);
+      return;
+    }
+
+    const zielDatumObj = new Date(zielDatum);
+    let monate = (zielDatumObj.getFullYear() - jetzt.getFullYear()) * 12 +
+                 (zielDatumObj.getMonth() - jetzt.getMonth());
+
+    if (jetzt.getDate() > zielDatumObj.getDate()) {
+      monate--;
+    }
+
+    const tempDatum = new Date(jetzt);
+    tempDatum.setMonth(tempDatum.getMonth() + monate);
+
+    let tage = Math.floor((zielDatumObj - tempDatum) / (1000 * 60 * 60 * 24));
+    let stunden = Math.floor((rest % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minuten = Math.floor((rest % (1000 * 60 * 60)) / (1000 * 60));
+    let sekunden = Math.floor((rest % (1000 * 60)) / 1000);
+
+    document.getElementById("months").textContent = monate;
+    document.getElementById("days").textContent = tage;
+    document.getElementById("hours").textContent = stunden;
+    document.getElementById("minutes").textContent = minuten;
+    document.getElementById("seconds").textContent = sekunden;
+  }
+
+  // Initialisierung
+  window.addEventListener('load', () => {
+    adjustScale();
+    berechneCountdown();
+  });
+  window.addEventListener('resize', adjustScale);
+  
+  const timer = setInterval(berechneCountdown, 1000);
+</script>
+
+</body>
+</html>
